@@ -1,8 +1,7 @@
 { lib, pkgs, ... }:
 
 {
-
-# Use the systemd-boot EFI boot loader.
+  # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -26,6 +25,8 @@
   #   useXkbConfig = true; # use xkbOptions in tty.
   # };
 
+  virtualisation.docker.enable = true;
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -36,15 +37,10 @@
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [
-    #139 #samba
-    #445 #samba
     548 #netatalk
-    5357 #wsdd
   ];
   networking.firewall.allowedUDPPorts = [
-    #137 #samba
-    #138 #samba
-    3702 #wsdd
+
   ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -62,8 +58,16 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.05"; # Did you read the comment?
 
-  system.autoUpgrade.enable = true;
-  system.autoUpgrade.channel = https://nixos.org/channels/nixos-22.05;
-  system.autoUpgrade.allowReboot = true;
+  system.autoUpgrade = {
+    enable = true;
+    channel = https://nixos.org/channels/nixos-22.05;
+    allowReboot = true;
+  };
 
+  nix.settings.auto-optimise-store = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 }
